@@ -1,6 +1,6 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
-import { routes } from "../../constants/routes";
+import { Routes } from "../../constants";
 
 const Sidebar = () => {
   const { pathname } = useLocation();
@@ -11,47 +11,59 @@ const Sidebar = () => {
     <aside id="sidebar" className="sidebar">
     <ul className="sidebar-nav" id="sidebar-nav">
 
-        <li className="nav-item">
+        {/* <li className="nav-item">
         <Link
             className={`nav-link  ${
-              splitLocation[1] === "dashboard" ? "collapsed" : ""
+              splitLocation[1] === "Dashboard" ? "collapsed" : ""
             } `}
             to={routes.DASHBOARD}
           >
             <i className="fa-solid fa-dashboard" />
             <span>Dashboard</span>
           </Link>
-        </li>
+        </li> */}
+
+        <li className="nav-item">
+            <Link
+              className={`nav-link  ${
+                splitLocation[1] === "" ? "collapsed" : ""
+              } `}
+              to={Routes.DASHBOARD}
+            >
+              <i className="fa-solid fa-dashboard" />
+              <span>Dashboard</span>
+            </Link>
+          </li>
 
         <li className="nav-item">
         <Link
             className={`nav-link  ${
               splitLocation[1] === "merchants" ? "collapsed" : ""
             } `}
-            to={routes.MERCHANT}
+            to={Routes.MERCHANT}
           >
              <i className="fa-solid fa-users"></i>
             <span>Merchants</span>
           </Link>
         </li>
-        <li className="nav-item">
-        <Link
-            className={`nav-link  ${
-              splitLocation[1] === "verify " ? "collapsed" : ""
-            } `}
-            to={"#"}
-          >
-            <i className="fa-solid fa-user-check"></i>
-            <span>Verify Merchants</span>
-          </Link>
-        </li>
+          <li className="nav-item">
+            <Link
+              className={`nav-link  ${
+                splitLocation[1] === "verify-merchant" ? "collapsed" : ""
+              } `}
+              to={Routes.VERIFYMERCHANTS}
+            >
+             <i className="fa-solid fa-user-check"></i>
+              <span>Verify Merchants</span>
+            </Link>
+          </li>
         
         <li className="nav-item">
          <Link
             className={`nav-link  ${
-              splitLocation[1] === "block " ? "collapsed" : ""
+              splitLocation[1] === "block-merchant" ? "collapsed" : ""
             } `}
-            to={"#"}
+            to={Routes.BLOCKMERCHANTS}
           >
             <i className="fa-solid fa-ban"></i>
             <span>Block Merchants</span>

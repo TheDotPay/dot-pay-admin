@@ -6,13 +6,13 @@ import { db } from "../../Firebase/config";
 import ToggleButton from "react-toggle-button";
 import { routes } from "../../constants/routes";
 
-const Merchants = (props) => {
+const BlockMerchants = (props) => {
   const [docData, setdocData] = useState({});
 
   const getData = async () => {
     const q = query(
       collection(db, "Merchants"),
-      where("isKycComplete", "==", true)
+      where("isProfileBlocked", "==", true)
     );
     const querySnapshot = await getDocs(q);
     let arr = [];
@@ -77,7 +77,7 @@ const Merchants = (props) => {
             </React.Fragment>
           ) : (
             <tr>
-              <td colSpan="10 mt-2">No results found!</td>
+              <td colSpan="10 mt-2">No results found For Block Merchant!</td>
             </tr>
           )}
         </tbody>
@@ -100,6 +100,6 @@ const Merchants = (props) => {
   );
 };
 
-export default Merchants;
+export default BlockMerchants;
 
 // File created by sourav mishra on 11/7/22

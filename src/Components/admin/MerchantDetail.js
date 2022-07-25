@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { routes } from "../../constants/routes";
 import { Link ,useParams} from "react-router-dom";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc,updateDoc } from "firebase/firestore";
 import { db } from "../../Firebase/config";
+import { toast } from "react-toastify";
+import Swal from "sweetalert2"; 
 
 const MerchantDetail = () => {
 
     const params = useParams(); 
     const [kycInfo, setkycInfo] = useState({});
     const [docData, setdocData] = useState({});
-
 
     const getKycData = async () => {
         const docRef = doc(db, "Kyc", params.userId);
@@ -22,32 +23,76 @@ const MerchantDetail = () => {
           console.log("No such document!");
         }
       };
-      useEffect(() => {
-        getData();
-         getKycData();
-      }, []);  
-    
+ 
     const getData = async () => {
         const docRef = doc(db, "Merchants", params.userId);
         const docSnap = await getDoc(docRef);
     
         if (docSnap.exists()) {
           const data = docSnap.data() && docSnap.data();
-          console.log(data);
+          // console.log(data);
           setdocData(data);
         } else {
           console.log("No such document!");
         }
       };
+
       useEffect(() => {
         getData();
-        // getKycData();
-      }, []);   
+         getKycData();
+      }, []);  
+
+      
+      const handleBlock = (id) => {
+        Swal.fire({
+         title: 'Are you sure?',
+         text: "You won't be able to revert this!",
+         icon: 'warning',
+         showCancelButton: true,
+         confirmButtonColor: '#3085d6',
+         cancelButtonColor: '#d33',
+         confirmButtonText: 'Yes, Block it!'
+       }).then((result) => {
+         if (result.isConfirmed) {
+           updateDoc(doc(db, "Merchants", params.userId), {
+              isProfileBlocked: true,
+              })
+           Swal.fire(
+             'Blocked!',
+             'Merchant is blocked .',
+             'success'
+           )
+         }
+       })
+       }
+       const handleUnBlock = (id) => {
+        Swal.fire({
+         title: 'Are you sure?',
+         text: "You won't be able to revert this!",
+         icon: 'warning',
+         showCancelButton: true,
+         confirmButtonColor: '#3085d6',
+         cancelButtonColor: '#d33',
+         confirmButtonText: 'Yes, UnBlock it!'
+       }).then((result) => {
+         if (result.isConfirmed) {
+           updateDoc(doc(db, "Merchants", params.userId), {
+              isProfileBlocked: false,
+              })
+           Swal.fire(
+             'UnBlocked!',
+             'Merchant is Unblocked .',
+             'success'
+           )
+         }
+       })
+       }
+      
 
 
-     console.log(kycInfo,"kyc")
-    console.log(docData,"docdata")
-    console.log(params.userId,"id")
+      console.log(kycInfo,"kyc")
+     console.log(docData,"docdata")
+    // console.log(params.userId,"id")
 
   return (
     <React.Fragment>
@@ -71,14 +116,14 @@ const MerchantDetail = () => {
             <div className="col-xs-12 col-sm-3 center">
                   <span className="profile-picture">
                     <img
-                      className="editable img-responsive"
+                      className="editable  img-fluid"
                       alt=" Avatar"
                       id="avatar2"
                       src={docData.image}
                     />
                   </span>
                   <div className="space space-4" />
-                 <button>Block</button>
+                 {docData.isProfileBlocked  ?<button onClick={handleUnBlock}>UnBlock</button>: <button onClick={handleBlock}>Block</button>}
                  <button>Verify</button>
                 </div>
               <div className="row">
@@ -145,6 +190,12 @@ const MerchantDetail = () => {
                       </div>
                     </div>
                     <div className="profile-info-row">
+                      <div className="profile-info-name">Site Url </div>
+                      <div className="profile-info-value">
+                        <span>{kycInfo.SiteUrl ? kycInfo.SiteUrl : "Accept payments on Website" }</span>
+                      </div>
+                    </div>
+                    <div className="profile-info-row">
                       <div className="profile-info-name"> Business Description </div>
                       <div className="profile-info-value">
                         <span>{kycInfo.Description}</span>
@@ -175,6 +226,12 @@ const MerchantDetail = () => {
                       <div className="profile-info-name"> Pin Code </div>
                       <div className="profile-info-value">
                         <span>{kycInfo.Pincode}</span>
+                      </div>
+                    </div>
+                    <div className="profile-info-row">
+                      <div className="profile-info-name"> City </div>
+                      <div className="profile-info-value">
+                        <span>{kycInfo.City}</span>
                       </div>
                     </div>
                     <div className="profile-info-row">

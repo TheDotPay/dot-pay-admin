@@ -5,9 +5,7 @@ import application from './models/Application/reducer';
 
 const rootReducers = combineReducers(
     {
-       
         application,
-      
     });
 
 const store = createStore(rootReducers, composeWithDevTools(applyMiddleware(thunk)) );

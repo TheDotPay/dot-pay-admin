@@ -6,13 +6,13 @@ import { db } from "../../Firebase/config";
 import ToggleButton from "react-toggle-button";
 import { routes } from "../../constants/routes";
 
-const Merchants = (props) => {
+const VerifyMerchants = (props) => {
   const [docData, setdocData] = useState({});
 
   const getData = async () => {
     const q = query(
       collection(db, "Merchants"),
-      where("isKycComplete", "==", true)
+      where("isProfileVerified", "==", true)
     );
     const querySnapshot = await getDocs(q);
     let arr = [];
@@ -100,6 +100,6 @@ const Merchants = (props) => {
   );
 };
 
-export default Merchants;
+export default VerifyMerchants;
 
 // File created by sourav mishra on 11/7/22
