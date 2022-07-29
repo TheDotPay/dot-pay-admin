@@ -1,4 +1,5 @@
 import * as CONSTANTS from "./constants";
+import  *  as  CONTRACT from "../../../contracts";  
 
 export const setLoading = (val, message='') => async (dispatch, getState) => {
    try {

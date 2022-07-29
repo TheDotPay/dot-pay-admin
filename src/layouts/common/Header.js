@@ -1,7 +1,15 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
+import { Button, Card } from "react-bootstrap"
+import { useState } from "react";
+import { toast } from "react-toastify";
+import { ethers } from "ethers";
 
 const Header = () => {
+
+  const [address, setAddress] = useState("");
+  const [balance, setBalance] = useState("");
+
   const handleToggle = () => {
     const list = document.querySelector("body").classList;
     //console.log(list.contains,"list");
@@ -11,6 +19,51 @@ const Header = () => {
       list.add("toggle-sidebar");
     }
   };
+  const btnhandler = () => {
+    // Asking if metamask is already present or not
+    if (window.ethereum) {
+      // res[0] for fetching a first wallet
+      window.ethereum
+        .request({ method: "eth_requestAccounts" })
+        .then((res) => accountChangeHandler(res[0]));
+    } else {
+      alert("install metamask extension!!");
+    }
+  };
+  const getbalance = (address) => {
+    // Requesting balance method
+    window.ethereum
+      .request({
+        method: "eth_getBalance",
+        params: [address, "latest"],
+      })
+      .then((balance) => {
+        // Setting balance
+        setBalance(ethers.utils.formatEther(balance));
+      });
+  };
+
+  const accountChangeHandler = (account) => {
+    localStorage.setItem("wallet", account);
+    localStorage.setItem("wallet_type", process.env.REACT_APP_WALLET_TYPE_METAMASK);
+    // console.log("account",account)
+    // Setting an address data
+    toast.success("Connect with MetaMask!", {
+      position: toast.POSITION.TOP_CENTER,
+    });
+    setAddress(account);
+    
+    // Setting a balance
+    getbalance(account);
+  };
+
+
+
+  const disconnect = () =>{
+    setAddress();
+    setBalance();
+   }
+
   return (
   <header id="header" className="header fixed-top d-flex align-items-center">
   <div className="d-flex align-items-center justify-content-between">
@@ -26,6 +79,7 @@ const Header = () => {
 </form>
     </div> */}{/* End Search Bar */}
   <nav className="header-nav ms-auto">
+
     <ul className="d-flex align-items-center">
       <li className="nav-item dropdown">
         <Link className="nav-link nav-icon" to="#" data-bs-toggle="dropdown">
@@ -166,6 +220,38 @@ const Header = () => {
           </li>
         </ul>{/* End Profile Dropdown Items */}
       </li>{/* End Profile Nav */}
+      <li className="nav-item dropdown pe-3">
+            <Link
+              className=" nav-link nav-icon nav-profile d-flex align-items-center pe-0 "  
+              to="#"
+              data-bs-toggle="dropdown"
+            >
+              <i className="fa-solid fa-wallet" />
+              {/* <span class="d-none d-md-block dropdown-toggle ps-2">K. Anderson</span> */}
+            </Link>
+            <ul className="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
+              <li className="dropdown-header">
+                <Card className="text-center">
+                  <Card.Header>
+                    <strong>Address: </strong>
+                    {address && address}
+                  </Card.Header>
+                  <Card.Body>
+                  <Card.Text>
+                      <strong>Balance: </strong>
+                      {balance}
+                    </Card.Text>
+                   {!address && <Button onClick={btnhandler} variant="primary">
+                      Connect to wallet
+                    </Button>}
+                    {address && <Button onClick={disconnect} variant="primary">
+                     Disconnect Wallet
+                    </Button>}
+                  </Card.Body>
+                </Card>
+              </li>
+            </ul>
+          </li>
     </ul>
   </nav>{/* End Icons Navigation */}
 </header>

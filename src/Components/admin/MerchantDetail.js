@@ -5,13 +5,16 @@ import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "../../Firebase/config";
 // import { toast } from "react-toastify";
 import Swal from "sweetalert2";
+import { injectModels } from "../../redux/injectModels";
 
-const MerchantDetail = () => {
+import { ethers } from "ethers";
+
+
+const MerchantDetail = (props) => {
   const params = useParams();
   const [kycInfo, setkycInfo] = useState({});
   const [docData, setdocData] = useState({});
   const [imageLoading, setImageLoading] = useState(false);
-
   const getKycData = async () => {
     const docRef = doc(db, "Kyc", params.userId);
     const docSnap = await getDoc(docRef);
@@ -23,6 +26,8 @@ const MerchantDetail = () => {
       console.log("No such document!");
     }
   };
+
+
 
   const getData = async () => {
     const docRef = doc(db, "Merchants", params.userId);
@@ -42,6 +47,15 @@ const MerchantDetail = () => {
     getKycData();
   }, []);
 
+  // const isMerchantBlocked =   props.admin.isMerchantBlocked(docData.merchantContractAddress);
+  // console.log(isMerchantBlocked,"checkblock")
+
+  const checkBlockStatus = async() => {
+    const isMerchantBlocked =   await props.admin.isMerchantBlocked(docData.merchantContractAddress);
+    console.log(isMerchantBlocked,"checkblock")
+  
+  }
+
   const handleBlock = () => {
     Swal.fire({
       title: "Are you sure?",
@@ -51,16 +65,23 @@ const MerchantDetail = () => {
       confirmButtonColor: "#3085d6",
       cancelButtonColor: "#d33",
       confirmButtonText: "Yes, Block it!",
-    }).then((result) => {
+    }).then(async (result) => {
       if (result.isConfirmed) {
-        updateDoc(doc(db, "Merchants", params.userId), {
-          isProfileBlocked: true,
-        });
-        getData();
-        Swal.fire("Blocked!", "Merchant is blocked .", "success");
+        try {
+          await props.admin.blockMerchant(docData.merchantContractAddress);
+          updateDoc(doc(db, "Merchants", params.userId), {
+            isProfileBlocked: true,
+          });
+          getData();
+          Swal.fire("Blocked!", "Merchant is blocked .", "success");
+        } catch (err) {
+          console.log(err);
+          return Promise.reject(err);
+        }
       }
     });
   };
+
   const handleUnBlock = () => {
     Swal.fire({
       title: "Are you sure?",
@@ -70,13 +91,19 @@ const MerchantDetail = () => {
       confirmButtonColor: "#3085d6",
       cancelButtonColor: "#d33",
       confirmButtonText: "Yes, UnBlock it!",
-    }).then((result) => {
+    }).then(async (result) => {
       if (result.isConfirmed) {
-        updateDoc(doc(db, "Merchants", params.userId), {
-          isProfileBlocked: false,
-        });
-        getData();
-        Swal.fire("UnBlocked!", "Merchant is Unblocked .", "success");
+        try {
+          await props.admin.unBlockMerchant(docData.merchantContractAddress);
+          updateDoc(doc(db, "Merchants", params.userId), {
+            isProfileBlocked: false,
+          });
+          getData();
+          Swal.fire("unBlocked!", "Merchant is Unblocked .", "success");
+        } catch (err) {
+          console.log(err);
+          return Promise.reject(err);
+        }
       }
     });
   };
@@ -90,20 +117,30 @@ const MerchantDetail = () => {
       confirmButtonColor: "#3085d6",
       cancelButtonColor: "#d33",
       confirmButtonText: "Yes, Verified it!",
-    }).then((result) => {
+    }).then(async (result) => {
       if (result.isConfirmed) {
-        updateDoc(doc(db, "Merchants", params.userId), {
-          isProfileVerified: true,
-        });
-        getData();
-        Swal.fire("Verified!", "Merchant is Verified .", "success");
+        try {
+          // add a field to take the below values later
+          let event = await props.admin.addMerchant(
+            kycInfo.WalletAddress,
+            "100000000000000000",
+            "5000000000000000000"
+          );
+          let merchantContractAddress = event.topics[3];
+          console.log(merchantContractAddress);
+          await updateDoc(doc(db, "Merchants", params.userId), {
+            merchantContractAddress: merchantContractAddress,
+            isProfileVerified: true,
+          });
+          getData();
+          Swal.fire("Verified!", "Merchant is Verified .", "success");
+        } catch (err) {
+          console.log(err);
+          return Promise.reject(err);
+        }
       }
     });
   };
-  
-  console.log(kycInfo, "kyc");
-  console.log(docData, "docdata");
-  // console.log(params.userId,"id")
 
   return (
     <React.Fragment>
@@ -129,16 +166,24 @@ const MerchantDetail = () => {
                       alt=" Avatar"
                       id="avatar2"
                       // src={docData.image}
-                      src={imageLoading 
-                        ? "/assets/img/loader.svg" 
-                        : docData.image 
-                        ? docData.image
-                        : "/assets/img/image-placeholder.svg"
+                      src={
+                        imageLoading
+                          ? "/assets/img/loader.svg"
+                          : docData.image
+                          ? docData.image
+                          : "/assets/img/image-placeholder.svg"
                       }
                     />
-                   {docData.isProfileVerified ? <img src="../assets/img/verified.png" alt="" className="verified-img"/> : ""}
+                    {docData.isProfileVerified ? (
+                      <img
+                        src="../assets/img/verified.png"
+                        alt=""
+                        className="verified-img"
+                      />
+                    ) : (
+                      ""
+                    )}
                   </span>
-                  
                 </div>
 
                 <div className="col-md-8 ">
@@ -171,20 +216,38 @@ const MerchantDetail = () => {
                       </div>
                     </div>
                     <div className="profile-info-row">
-                      <div className="profile-info-name"> user Id </div>
+                      <div className="profile-info-name"> User Id </div>
                       <div className="profile-info-value">
                         <span>{docData.uid}</span>
                       </div>
                     </div>
+                    <div className="profile-info-row">
+                      <div className="profile-info-name">
+                        {" "}
+                        Merchant Contract Address{" "}
+                      </div>
+                      <div className="profile-info-value">
+                        <span>
+                          {docData.merchantContractAddress
+                            ? docData.merchantContractAddress
+                            : "Yet Not Verified"}
+                        </span>
+                      </div>
+                    </div>
+
                     <div className="button-kyc">
-                      {docData.isProfileBlocked ? (
-                        <button onClick={handleUnBlock}>UnBlock</button>
+                    
+                        <button className="block-btn" onClick={checkBlockStatus}>
+                          Settings
+                        </button>
+                      {docData.isProfileVerified ? (
+                        ""
                       ) : (
-                        <button className="block-btn" onClick={handleBlock}>
-                          Block
+                        <button className="btn-verfy" onClick={handleVerified}>
+                          {" "}
+                          Verify
                         </button>
                       )}
-                      {docData.isProfileVerified ?  "" :<button className="btn-verfy" onClick={handleVerified}> Verify</button>}
                     </div>
 
                     <div className="hr hr-8 dotted" />
@@ -304,4 +367,6 @@ const MerchantDetail = () => {
   );
 };
 
-export default MerchantDetail;
+// export default  injectModels(['admin'])(MerchantDetail);
+export default injectModels(["admin"])(MerchantDetail);
+// export default MerchantDetail;
