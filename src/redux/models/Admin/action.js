@@ -1,10 +1,10 @@
 import { ethers } from "ethers";
-// import Web3 from "web3";
+import Web3 from "web3";
 import getWalletProvider from "../../../utils/getWalletProvider";
 import * as CONTRACT from "../../../contracts";
 
-//const web3Object = new Web3(new Web3.providers.HttpProvider(`${process.env.REACT_APP_BLOCKCHAIN_NETWORK}`));
-//console.log(web3Object,"web3Object")
+const web3Object = new Web3(new Web3.providers.HttpProvider(`${process.env.REACT_APP_BLOCKCHAIN_NETWORK}`));
+console.log(web3Object,"web3Object")
 
 const DotBankAddress = process.env.REACT_APP_DOTPAY_ADDRESS;
 console.log(DotBankAddress,"address")
@@ -46,14 +46,14 @@ export const addMerchant =(walletAddress, currentShare, sharingCliffValue) => as
 
   export const isMerchantBlocked =(merchantContractAddress) =>async (dispatch, getState) => {
     try {
-        // const dotPayContract = new web3Object.eth.Contract(CONTRACT.DotPayContract.abi, DotBankAddress);
-        // console.log(dotPayContract,"contract")
-        // merchantContractAddress=  merchantContractAddress.substr(merchantContractAddress.length -40);
-        // merchantContractAddress='0x'+merchantContractAddress;
-        // console.log(merchantContractAddress,"merchant redefined address")
-        // const currentStatus = await dotPayContract.methods.getMerchantStatus(merchantContractAddress).call();
-        // console.log(currentStatus, "transaction");
-        // return currentStatus;
+        const dotPayContract = new web3Object.eth.Contract(CONTRACT.DotPayContract.abi, DotBankAddress);
+        console.log(dotPayContract,"contract")
+        merchantContractAddress=  merchantContractAddress.substr(merchantContractAddress.length -40);
+        merchantContractAddress='0x'+merchantContractAddress;
+        console.log(merchantContractAddress,"merchant redefined address")
+        const currentStatus = await dotPayContract.methods.getMerchantStatus(merchantContractAddress).call();
+        console.log(currentStatus, "transaction");
+        return currentStatus;
     } catch (err) {
       console.log(err);
       return Promise.reject(err);
