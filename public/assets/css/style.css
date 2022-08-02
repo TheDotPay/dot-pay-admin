@@ -2781,3 +2781,82 @@ button.btn-verfy {
 .grey {
     color: #777!important
 }
+form .searchformfld{
+  position: relative;
+  margin: 5px 0px;
+}
+form .searchformfld textarea ~ label{
+  top: 40px
+}
+form .searchformfld label {
+  position: absolute;
+  padding-left: 10px;
+  top: 25px;
+  cursor: text;
+  left: 0;
+  /*background: red;*/
+  font-size: 13px;
+  font-weight: 500;
+  pointer-events: none;    
+}
+form .searchformfld input:focus + label, form .searchformfld textarea:focus + label,.searchformfld input:not(:placeholder-shown) + label{
+  opacity:1;
+  transform: scale(.9) translateY(0px) translateX(-0);
+  background: #fff;
+  color: #000;
+  /*background: red;*/
+  top: 0px
+}
+form .searchformfld input:focus{
+  border:1px solid #000;
+  outline-color: #000;
+}
+form .searchformfld {
+  padding: 16px 0;
+  margin: -9px 0px;
+}
+form .searchformfld input{
+  width:100%;
+  padding-left: 10px;
+  font-size: 14px;
+}
+form .searchformfld label,.searchformfld input{
+  transition: all 0.2s;
+  transition-timing-function: ease;
+  transition-timing-function: cubic-bezier(0.25, 0.1, 0.25, 1);
+  opacity:0.5;
+}
+.contact-form-content textarea.form-control:focus {
+  background: #fff;
+}
+.contact-form-content textarea.form-control {
+  height: auto;
+  background: #fff;
+}
+.submit-button{
+  display: flex;
+ justify-content: center;
+}
+.submit-button button {
+ background-color: #f58221;
+ border-radius: 50px 50px 50px 50px;
+ padding: 7px 20px 7px 19px;
+ color: #fff;
+ border: none;
+ transition: all 0.4s ease;
+ margin-top: 15px;
+ margin-bottom: 10px;
+ box-shadow: 5px 5px 5px rgb(0 0 0 / 10%);
+ display: flex;
+ align-items: center;
+ justify-content: center;
+}
+
+.submit-button button:hover{
+ background: #123962;
+ color: #fff;
+}
+.submit-button button:focus{
+ background: #123962 !important;
+ color: #fff;
+}

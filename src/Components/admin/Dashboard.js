@@ -4,7 +4,7 @@ import { routes } from '../../constants/routes';
 import { collection, getDocs,where, query } from "firebase/firestore";
 import { db } from "../../Firebase/config";
 import { Routes } from '../../constants';
-import BlockMerchants from './BlockMerchants';
+
 
 const Dashboard = () => {
   const [docData, setdocData] = useState({});

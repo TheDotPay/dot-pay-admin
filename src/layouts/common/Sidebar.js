@@ -69,6 +69,18 @@ const Sidebar = () => {
             <span>Block Merchants</span>
           </Link>
         </li>
+
+        <li className="nav-item">
+         <Link
+            className={`nav-link  ${
+              splitLocation[1] === "verifiers" ? "collapsed" : ""
+            } `}
+            to={Routes.VERIFIERS}
+          >
+            <i className="fa-solid fa-person-circle-plus" />
+            <span>Verifiers</span>
+          </Link>
+        </li>
      
         <li className="nav-item">
          <Link

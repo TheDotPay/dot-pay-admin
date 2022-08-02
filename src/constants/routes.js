@@ -5,4 +5,5 @@ export const routes = {
     MERCHANTDETAILS:"/merchant-details",
     VERIFYMERCHANTS:"/verify-merchant",
     BLOCKMERCHANTS:'/block-merchant',
+    VERIFIERS:'/verifiers',
 };

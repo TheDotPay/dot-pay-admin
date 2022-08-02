@@ -48,6 +48,18 @@
         },
         {
           "indexed": true,
+          "internalType": "address",
+          "name": "verifierAddress_",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "merchantContractAddress",
+          "type": "address"
+        },
+        {
+          "indexed": false,
           "internalType": "uint256",
           "name": "currentShare_",
           "type": "uint256"
@@ -57,12 +69,6 @@
           "internalType": "uint256",
           "name": "sharingCliffValue_",
           "type": "uint256"
-        },
-        {
-          "indexed": true,
-          "internalType": "address",
-          "name": "merchantContractAddress",
-          "type": "address"
         }
       ],
       "name": "AddMerchant",
@@ -75,6 +81,12 @@
           "indexed": true,
           "internalType": "address",
           "name": "verifierAddress_",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "callerAddress_",
           "type": "address"
         }
       ],
@@ -152,6 +164,12 @@
           "internalType": "address",
           "name": "verifierAddress_",
           "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "callerAddress_",
+          "type": "address"
         }
       ],
       "name": "RemoveVerifier",
@@ -228,6 +246,12 @@
           "internalType": "uint256",
           "name": "amount_",
           "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "callerAddress_",
+          "type": "address"
         }
       ],
       "name": "WithdrawBNB",
@@ -247,6 +271,12 @@
           "internalType": "uint256",
           "name": "amount_",
           "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "callerAddress_",
+          "type": "address"
         }
       ],
       "name": "WithdrawTokens",

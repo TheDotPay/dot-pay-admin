@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { collection, where, getDocs, query } from "firebase/firestore";
 import { db } from "../../Firebase/config";
-// import Swal from "sweetalert2";
 import ToggleButton from "react-toggle-button";
 import { routes } from "../../constants/routes";
 
@@ -64,12 +63,9 @@ const Merchants = (props) => {
                       <img src={item.image} alt="" className="avatar" />
                     </td>
                     <td>
-                      {" "}
-                      <div className="btn-group">
                         <Link to={routes.MERCHANTDETAILS + "/" + item.uid}>
                           View
                         </Link>
-                      </div>
                     </td>
                   </tr>
                 );

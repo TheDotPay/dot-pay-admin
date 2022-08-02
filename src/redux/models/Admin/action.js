@@ -4,10 +4,8 @@ import getWalletProvider from "../../../utils/getWalletProvider";
 import * as CONTRACT from "../../../contracts";
 
 const web3Object = new Web3(new Web3.providers.HttpProvider(`${process.env.REACT_APP_BLOCKCHAIN_NETWORK}`));
-console.log(web3Object,"web3Object")
 
 const DotBankAddress = process.env.REACT_APP_DOTPAY_ADDRESS;
-console.log(DotBankAddress,"address")
 
 export const addMerchant =(walletAddress, currentShare, sharingCliffValue) => async (dispatch, getState) => {
     try {
@@ -44,13 +42,66 @@ export const addMerchant =(walletAddress, currentShare, sharingCliffValue) => as
     }
   };
 
+  export const addVerifier = (VerifierAddress) => async () => {
+    try{
+      const provider = await getWalletProvider();
+      if (!provider) {
+        throw new Error("Only metamask is supported"); }
+     else {
+      const signer = provider.getSigner();
+      console.log(signer, "signer");
+
+      const dotPayContract = new ethers.Contract(
+        DotBankAddress,
+        CONTRACT.DotPayContract.abi,
+        signer
+      );
+      console.log(dotPayContract);
+     let transaction = await dotPayContract.addVerifier(VerifierAddress);
+     let tx = await transaction.wait();
+
+     console.log(tx,"check")
+     return true;
+    }
+    }
+    catch (err) {
+      console.log(err);
+      return Promise.reject(err);
+    }
+  }
+  export const removeVerifier = (VerifierAddress) => async () => {
+    try{
+      const provider = await getWalletProvider();
+      if (!provider) {
+        throw new Error("Only metamask is supported"); }
+     else {
+      const signer = provider.getSigner();
+      console.log(signer, "signer");
+
+      const dotPayContract = new ethers.Contract(
+        DotBankAddress,
+        CONTRACT.DotPayContract.abi,
+        signer
+      );
+      console.log(dotPayContract);
+     let transaction = await dotPayContract.removeVerifier(VerifierAddress);
+     let tx = await transaction.wait();
+     console.log(tx,"check")
+     return true;
+    }
+    }
+    catch (err) {
+      console.log(err);
+      return Promise.reject(err);
+    }
+  }
+
   export const isMerchantBlocked =(merchantContractAddress) =>async (dispatch, getState) => {
     try {
         const dotPayContract = new web3Object.eth.Contract(CONTRACT.DotPayContract.abi, DotBankAddress);
         console.log(dotPayContract,"contract")
         merchantContractAddress=  merchantContractAddress.substr(merchantContractAddress.length -40);
         merchantContractAddress='0x'+merchantContractAddress;
-        console.log(merchantContractAddress,"merchant redefined address")
         const currentStatus = await dotPayContract.methods.getMerchantStatus(merchantContractAddress).call();
         console.log(currentStatus, "transaction");
         return currentStatus;

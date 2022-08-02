@@ -7,8 +7,6 @@ import { db } from "../../Firebase/config";
 import Swal from "sweetalert2";
 import { injectModels } from "../../redux/injectModels";
 
-import { ethers } from "ethers";
-
 
 const MerchantDetail = (props) => {
   const params = useParams();
@@ -42,71 +40,119 @@ const MerchantDetail = (props) => {
     }
   };
 
+
+
+  // const isMerchantBlocked =   props.admin.isMerchantBlocked(docData.merchantContractAddress);
+  // console.log(isMerchantBlocked,"checkblock")
+  const checkBlockStatus = async() => {
+     const isMerchantBlocked =   await props.admin.isMerchantBlocked(docData.merchantContractAddress);
+     const status = isMerchantBlocked?"Blocked":"Unblocked";
+     const antistatus = isMerchantBlocked?"Unblock":"Block";
+        Swal.fire({
+      title: `${docData.name}`,
+      text: `${docData.name} is ${status}, you can ${antistatus} by clicking button below.`,
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: `Yes, ${antistatus} it!`,
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          if(isMerchantBlocked){
+            try {
+              props.application.setLoading(true)
+              await props.admin.unBlockMerchant(docData.merchantContractAddress);
+              getData();
+              props.application.setLoading(false)
+              Swal.fire("unBlocked!", "Merchant is Unblocked .", "success");
+            } catch (err) {
+              props.application.setLoading(false)
+              console.log(err);
+              return Promise.reject(err);
+            }
+            getData();
+            Swal.fire("unBlocked!", "Merchant is Unblocked .", "success");
+          }
+          else{
+          
+            try {
+              props.application.setLoading(true)
+              await props.admin.blockMerchant(docData.merchantContractAddress);
+              getData();
+              props.application.setLoading(false)
+              
+              Swal.fire("Blocked!", "Merchant is blocked .", "success");
+            } catch (err) {
+              props.application.setLoading(false)
+              console.log(err);
+              return Promise.reject(err);
+            }
+            getData();
+            Swal.fire("Blocked!", "Merchant is Blocked .", "success");
+          }
+        
+        } catch (err) {
+          console.log(err);
+          return Promise.reject(err);
+        }
+      }
+    });
+    console.log(isMerchantBlocked,"....")
+     return isMerchantBlocked;
+  }
+
   useEffect(() => {
     getData();
     getKycData();
   }, []);
-
-  // const isMerchantBlocked =   props.admin.isMerchantBlocked(docData.merchantContractAddress);
-  // console.log(isMerchantBlocked,"checkblock")
-
-  const checkBlockStatus = async() => {
-    const isMerchantBlocked =   await props.admin.isMerchantBlocked(docData.merchantContractAddress);
-    console.log(isMerchantBlocked,"checkblock")
   
-  }
 
-  const handleBlock = () => {
-    Swal.fire({
-      title: "Are you sure?",
-      text: "You won't be able to revert this!",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, Block it!",
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        try {
-          await props.admin.blockMerchant(docData.merchantContractAddress);
-          updateDoc(doc(db, "Merchants", params.userId), {
-            isProfileBlocked: true,
-          });
-          getData();
-          Swal.fire("Blocked!", "Merchant is blocked .", "success");
-        } catch (err) {
-          console.log(err);
-          return Promise.reject(err);
-        }
-      }
-    });
-  };
 
-  const handleUnBlock = () => {
-    Swal.fire({
-      title: "Are you sure?",
-      text: "You won't be able to revert this!",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, UnBlock it!",
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        try {
-          await props.admin.unBlockMerchant(docData.merchantContractAddress);
-          updateDoc(doc(db, "Merchants", params.userId), {
-            isProfileBlocked: false,
-          });
-          getData();
-          Swal.fire("unBlocked!", "Merchant is Unblocked .", "success");
-        } catch (err) {
-          console.log(err);
-          return Promise.reject(err);
-        }
-      }
-    });
-  };
+  // const handleBlock = () => {
+  //   Swal.fire({
+  //     title: "Are you sure?",
+  //     text: "You won't be able to revert this!",
+  //     icon: "warning",
+  //     showCancelButton: true,
+  //     confirmButtonColor: "#3085d6",
+  //     cancelButtonColor: "#d33",
+  //     confirmButtonText: "Yes, Block it!",
+  //   }).then(async (result) => {
+  //     if (result.isConfirmed) {
+  //       try {
+  //         await props.admin.blockMerchant(docData.merchantContractAddress);
+  //         getData();
+  //         Swal.fire("Blocked!", "Merchant is blocked .", "success");
+  //       } catch (err) {
+  //         console.log(err);
+  //         return Promise.reject(err);
+  //       }
+  //     }
+  //   });
+  // };
+
+  // const handleUnBlock = async() => {
+  //   Swal.fire({
+  //     title: "Are you sure?",
+  //     text: "You won't be able to revert this!",
+  //     icon: "warning",
+  //     showCancelButton: true,
+  //     confirmButtonColor: "#3085d6",
+  //     cancelButtonColor: "#d33",
+  //     confirmButtonText: "Yes, UnBlock it!",
+  //   }).then(async (result) => {
+  //     if (result.isConfirmed) {
+  //       try {
+  //         await props.admin.unBlockMerchant(docData.merchantContractAddress);
+  //         getData();
+  //         Swal.fire("unBlocked!", "Merchant is Unblocked .", "success");
+  //       } catch (err) {
+  //         console.log(err);
+  //         return Promise.reject(err);
+  //       }
+  //     }
+  //   });
+  // };
 
   const handleVerified = () => {
     Swal.fire({
@@ -120,19 +166,25 @@ const MerchantDetail = (props) => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
+          props.application.setLoading(true)
           // add a field to take the below values later
           let event = await props.admin.addMerchant(
             kycInfo.WalletAddress,
             "100000000000000000",
             "5000000000000000000"
           );
-          let merchantContractAddress = event.topics[3];
+          let merchantContractAddress = event.topics[2];
           console.log(merchantContractAddress);
+          let verifierAddress = event.topics[1];
+          console.log(verifierAddress);
+          props.application.setLoading(true)
           await updateDoc(doc(db, "Merchants", params.userId), {
             merchantContractAddress: merchantContractAddress,
             isProfileVerified: true,
+            verifiedBy: verifierAddress
           });
           getData();
+          props.application.setLoading(false)
           Swal.fire("Verified!", "Merchant is Verified .", "success");
         } catch (err) {
           console.log(err);
@@ -238,8 +290,9 @@ const MerchantDetail = (props) => {
                     <div className="button-kyc">
                     
                         <button className="block-btn" onClick={checkBlockStatus}>
-                          Settings
+                        <i className="fa-solid fa-gear"></i>
                         </button>
+                        {/* :<button>UnBlock</button> */}
                       {docData.isProfileVerified ? (
                         ""
                       ) : (
@@ -367,6 +420,6 @@ const MerchantDetail = (props) => {
   );
 };
 
-// export default  injectModels(['admin'])(MerchantDetail);
-export default injectModels(["admin"])(MerchantDetail);
-// export default MerchantDetail;
+export default injectModels(['admin','application'])(MerchantDetail);
+
+/* file created by sourav mishra on 22/07/2022 */
