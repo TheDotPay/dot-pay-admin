@@ -1,10 +1,13 @@
 import React from "react";
-import { doc, setDoc } from "firebase/firestore";
-import { db } from "../../Firebase/config";
 import { Button, Modal } from "react-bootstrap";
 import { useState } from "react";
+import { useEffect } from "react";
 import { injectModels } from "../../redux/injectModels";
 import { toast } from "react-toastify";
+import { collection, where, getDocs, query,doc, setDoc } from "firebase/firestore";
+import { db } from "../../Firebase/config";
+import { routes } from "../../constants/routes";
+import { Link } from "react-router-dom";
 
 const emailRegex =
   /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -15,7 +18,27 @@ const Verifiers = (props) => {
    const [verifierEmail,setverifierEmail] = useState("");
    const [verifierPhone,setVerifierPhone] = useState("");
    const [showModal, setShow] = useState(false);
-   const [error,setError] = useState("")
+   const [error,setError] = useState("");
+   const[verifer,setVerifer] = useState("");
+
+   const getData = async () => {
+    const q = query(
+      collection(db, "Verifier"),
+      where("isEnabeled", "==", true)
+    );
+    const querySnapshot = await getDocs(q);
+    let arr = [];
+    querySnapshot.forEach((doc) => {
+      arr.push(doc.data());
+    });
+    setVerifer(arr);
+  };
+  
+  useEffect(() => {
+    getData();
+  }, []);
+
+
 
    const handleVerifierWalletAddress = (e) => {
      e.preventDefault();
@@ -66,6 +89,27 @@ const Verifiers = (props) => {
 
    const handleClose = () => setShow(false);
    const handleShow = () => setShow(true);
+   
+  //  const handleRemoveVerifier = async() =>{
+  //   try{
+  //     props.application.setLoading(true)
+  //      await props.admin.removeVerifier(verifierAddress);
+
+  //      await setDoc(doc(db, "Verifier",  verifierAddress), {
+  //       isEnabeled:false
+  //     });
+  //      props.application.setLoading(false)
+  //      toast.success("Verifier Remove SuccessFully!", {
+  //       position: toast.POSITION.TOP_CENTER,
+  //     });
+
+  //   }catch (err) {
+  //     props.application.setLoading(false)
+  //     console.log(err);
+  //     return Promise.reject(err);
+  //   }
+  //   };
+  
 
    const handleSubmit = async (e) => {
       e.preventDefault();
@@ -115,7 +159,7 @@ const Verifiers = (props) => {
         position: toast.POSITION.TOP_CENTER,
       });
        handleClose()
-      
+       getData();
      } catch (err) {
        props.application.setLoading(false)
        console.log(err);
@@ -176,6 +220,43 @@ const Verifiers = (props) => {
           </Button>
         </Modal.Footer>
       </Modal>
+      <table className="table table-striped">
+        <thead className="thead-light">
+          <tr>
+            <th scope="col">S.No</th>
+            <th scope="col">verifierAddress</th>
+            <th scope="col">verifierEmail</th>
+            <th scope="col">verifierName </th>
+            <th scope="col">verifierPhone</th>
+            <th>Edit</th>
+          </tr>
+        </thead>
+        <tbody>
+          {verifer && verifer.length > 0 ? (
+            <React.Fragment>
+              {verifer.map((item, idx) => {
+                return (
+                  <tr key={idx}>
+                    <td>{idx + 1}</td>
+                    <td>
+                      <b>{item.verifierAddress}</b>
+                    </td>
+                    <td>{item.verifierEmail}</td>
+                    <td>{item.verifierName}</td>
+                    <td>{item.verifierPhone}</td>
+                    <td>{item.name}</td>
+                    <td><Link to={routes.VERIFIERMERCHANTPROFILE  + "/" + item.verifierAddress}>View</Link></td>
+                  </tr>
+                );
+              })}
+            </React.Fragment>
+          ) : (
+            <tr>
+              <td colSpan="10 mt-2">No results found!</td>
+            </tr>
+          )}
+        </tbody>
+      </table>
     </React.Fragment>
   );
 };

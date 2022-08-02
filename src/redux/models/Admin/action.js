@@ -69,7 +69,7 @@ export const addMerchant =(walletAddress, currentShare, sharingCliffValue) => as
       return Promise.reject(err);
     }
   }
-  export const removeVerifier = (VerifierAddress) => async () => {
+  export const removeVerifier = (VerifierAddress) => async () => { 
     try{
       const provider = await getWalletProvider();
       if (!provider) {

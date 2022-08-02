@@ -5,3 +5,4 @@ export { default as VerifyMerchants } from './VerifyMerchants';
 export { default as BlockMerchants } from './BlockMerchants';
 export {default as Loader} from './Loader/loader';
 export {default as Verifiers} from './Verifiers';
+export { default as VerifierMerchantProfile } from './VerifierMerchantProfile';
